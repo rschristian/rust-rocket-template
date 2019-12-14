@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  postgres:
+    container_name: 'postgres'
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_USER: "template_api"
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_DB: "template"
+    ports:
+     - "5432:5432"

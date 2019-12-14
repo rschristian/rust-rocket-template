@@ -1,0 +1,2 @@
+[development]
+databases = { diesel_postgres_pool = { url = "postgres://template_api:admin@localhost:5432/template" }}
