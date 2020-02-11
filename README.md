@@ -19,7 +19,7 @@ Diesel-cli - necessary only if Docker is not used
 
 ### Running
 
-To get the server running locally, I have provided a Docker Compose file for the database and the CLI tool used to manage said database. From project root, run:
+To aid in the process of starting the server, I have provided a Docker Compose file for the database, and created a container for the CLI tool used to manage migrations. From the project root, run:
 
 ```
 docker-compose up --build -d
@@ -39,16 +39,22 @@ The network you use depends on the parent directory, so if the docker compose is
 
 The Docker image built for diesel-cli will run "Diesel" without any arguments, making the container act like a normal CLI. However, that very large command is necessary upon every use. I therefore recommend creating an alias "docker ... /diesel-cli" to "diesel-cli" in a .bashrc or .zshrc, so the tool can be just called with "diesel-cli [command]".
 
-If you'd like to avoid Docker, a local Postgres database is necessary. Make sure to edit the [.env](.env) file and [Rocket.toml](Rocket.toml) file to match your connection URL. You will also need to install the diesel-cli, and run it with:
+If you'd like to avoid Docker, a local Postgres database is necessary. Make sure to edit the [.env](.env) file to match your connection URL. You will also need to install the diesel-cli, and run it with:
 
 ```
 diesel migration run
 ```
 
-The server can then be ran using:
+The server can then be ran using a debug build with:
 
 ```
 cargo run
+```
+
+Create a production build with:
+
+```
+cargo build --release
 ```
 
 ## Running the tests
