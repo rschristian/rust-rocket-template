@@ -3,7 +3,6 @@ use rocket::request::Request;
 use rocket::response::status;
 use rocket::response::{self, Responder};
 use rocket_contrib::json::Json;
-use std::collections::HashMap;
 use validator::{Validate, ValidationError, ValidationErrors};
 
 #[derive(Debug)]
@@ -26,21 +25,23 @@ impl Errors {
 
 impl<'r> Responder<'r> for Errors {
     fn respond_to(self, req: &Request) -> response::Result<'r> {
-        let errors = self
-            .errors
-            .field_errors()
-            .into_iter()
-            .map(|(field, errors)| {
-                let codes = errors.into_iter().map(|err| err.code).collect();
-                (field, codes)
-            })
-            .collect::<HashMap<_, Vec<_>>>();
+        use validator::ValidationErrorsKind::Field;
+
+        let mut errors = json!({});
+        for (field, field_errors) in self.errors.into_errors() {
+            if let Field(field_errors) = field_errors {
+                errors[field] = field_errors
+                    .into_iter()
+                    .map(|field_error| field_error.code)
+                    .collect();
+            }
+        }
 
         status::Custom(
             Status::UnprocessableEntity,
             Json(json!({ "errors": errors })),
         )
-        .respond_to(req)
+            .respond_to(req)
     }
 }
 
@@ -75,8 +76,8 @@ impl FieldValidator {
     }
 
     pub fn extract<T>(&mut self, field_name: &'static str, field: Option<T>) -> T
-    where
-        T: Default,
+        where
+            T: Default,
     {
         field.unwrap_or_else(|| {
             self.errors
