@@ -33,7 +33,7 @@ docker run --rm \
     -v "$PWD:/volume" \
     -w /volume \
     --network="$(basename $PWD)_default" \
-    -it ryanchristian4427/diesel-cli migration run
+    ryanchristian4427/diesel-cli migration run
 ```
 
 The Docker image built for diesel-cli will run "Diesel" without any arguments, making the container act like a normal CLI. However, that very large command is necessary upon every use. I therefore recommend creating an alias in a `.bashrc` or `.zshrc` so the tool can be just called with "diesel-cli [command]".
@@ -43,7 +43,7 @@ alias diesel-cli='docker run --rm \
     -v "$PWD:/volume" \
     -w /volume \
     --network="$(basename $PWD)_default" \
-    -it ryanchristian4427/diesel-cli';
+    ryanchristian4427/diesel-cli';
 ```
 
 If you'd like to avoid Docker, a local Postgres database is necessary. Make sure to edit the [.env](.env) file to match your connection URL. You will also need to install the diesel-cli and run it with:
