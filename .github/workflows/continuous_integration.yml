@@ -1,6 +1,9 @@
 name: CI
 
 on: [push, pull_request]
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
@@ -20,6 +23,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo
 
-      - uses: actions-rs/cargo@v1
+      - name: Start DB
+        run: docker-compose up -d
+
+      - name: Run cargo check --release
+        uses: actions-rs/cargo@v1
         with:
           command: check
+          args: --release
+
+      - name: Run cargo test --release
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --release
