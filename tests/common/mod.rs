@@ -82,16 +82,16 @@ fn try_login(client: &Client) -> Option<Token> {
     Some(token)
 }
 
-/// Register user for
+/// Register user for use in other tests
 pub fn register(client: &Client, first_name: &str, last_name: &str, email: &str, password: &str) {
     let response = client
         .post("/api/v1/users/register")
         .header(ContentType::JSON)
-        .body(json_string!({"user": {"first_name": first_name, "last_name": last_name, "email": email, "password": password}}))
+        .body(json_string!({"user": {"firstName": first_name, "lastName": last_name, "email": email, "password": password}}))
         .dispatch();
 
     match response.status() {
-        Status::Ok | Status::UnprocessableEntity => {} // ok,
+        Status::Ok | Status::Conflict => {} // ok,
         status => panic!("Registration failed: {}", status),
     }
 }

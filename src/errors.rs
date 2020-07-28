@@ -3,43 +3,25 @@ use rocket::request::Request;
 use rocket::response::status;
 use rocket::response::{self, Responder};
 use rocket_contrib::json::Json;
-use validator::{Validate, ValidationError, ValidationErrors};
+use validator::{Validate, ValidationError, ValidationErrors, ValidationErrorsKind::Field};
 
 #[derive(Debug)]
 pub struct Errors {
-    errors: ValidationErrors,
+    status: Status,
+    message: String,
 }
 
-pub type FieldName = &'static str;
-pub type FieldErrorCode = &'static str;
-
 impl Errors {
-    pub fn new(errs: &[(FieldName, FieldErrorCode)]) -> Self {
-        let mut errors = ValidationErrors::new();
-        for (field, code) in errs {
-            errors.add(field, ValidationError::new(code));
-        }
-        Self { errors }
+    pub fn new(status: Status, message: String) -> Self {
+        Self { status, message }
     }
 }
 
 impl<'r> Responder<'r> for Errors {
     fn respond_to(self, req: &Request) -> response::Result<'r> {
-        use validator::ValidationErrorsKind::Field;
-
-        let mut errors = json!({});
-        for (field, field_errors) in self.errors.into_errors() {
-            if let Field(field_errors) = field_errors {
-                errors[field] = field_errors
-                    .into_iter()
-                    .map(|field_error| field_error.code)
-                    .collect();
-            }
-        }
-
         status::Custom(
-            Status::UnprocessableEntity,
-            Json(json!({ "errors": errors })),
+            self.status,
+            Json(json!({ "success": false, "message": self.message })),
         )
             .respond_to(req)
     }
@@ -69,8 +51,16 @@ impl FieldValidator {
         if self.errors.is_empty() {
             Ok(())
         } else {
+            let mut error_message = "".to_owned();
+            for (field, field_errors) in self.errors.into_errors() {
+                if let Field(field_errors) = field_errors {
+                    error_message = format!("{} - {}", field, field_errors[0].code);
+                }
+            }
+
             Err(Errors {
-                errors: self.errors,
+                status: Status::UnprocessableEntity,
+                message: error_message,
             })
         }
     }
