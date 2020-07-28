@@ -1,8 +1,6 @@
 name: CI
 
 on: [push, pull_request]
-env:
-  CARGO_TERM_COLOR: always
 
 jobs:
   build_and_test:
@@ -26,11 +24,7 @@ jobs:
       - name: Start Database
         run: docker-compose up -d
       - name: Run Diesel Migrations
-        run: docker run --rm \
-            -v "$PWD:/volume" \
-            -w /volume \
-            --network="$(basename $PWD)_default" \
-            -it ryanchristian4427/diesel-cli migration run
+        run: docker run --rm -v "$PWD:/volume" -w /volume --network="$(basename $PWD)_default" ryanchristian4427/diesel-cli migration run
 
       - name: Run cargo check --release
         uses: actions-rs/cargo@v1
