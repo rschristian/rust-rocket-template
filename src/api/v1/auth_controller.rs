@@ -49,13 +49,13 @@ pub fn users_register(
         },
         conn,
     )
-        .map(|user| json!({ "user": user.to_user_auth(&state.secret) }))
-        .map_err(|error| {
-            let error = match error {
-                UserCreationError::DuplicatedEmail => ("email is already in use"),
-            };
-            Errors::new(Status::Conflict, error.to_owned())
-        })
+    .map(|user| json!({ "user": user.to_user_auth(&state.secret) }))
+    .map_err(|error| {
+        let error = match error {
+            UserCreationError::DuplicatedEmail => ("email is already in use"),
+        };
+        Errors::new(Status::Conflict, error.to_owned())
+    })
 }
 
 #[derive(Deserialize)]

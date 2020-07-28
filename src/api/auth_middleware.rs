@@ -20,7 +20,7 @@ impl Auth {
             self,
             &jwt::EncodingKey::from_secret(secret),
         )
-            .expect("jwt")
+        .expect("jwt")
     }
 }
 
@@ -65,11 +65,11 @@ fn decode_token(token: &str, secret: &[u8]) -> Option<Auth> {
         &jwt::DecodingKey::from_secret(secret),
         &jwt::Validation::new(jwt::Algorithm::HS256),
     )
-        .map_err(|err| {
-            eprintln!("Auth decode error: {:?}", err);
-        })
-        .ok()
-        .map(|token_data| token_data.claims)
+    .map_err(|err| {
+        eprintln!("Auth decode error: {:?}", err);
+    })
+    .ok()
+    .map(|token_data| token_data.claims)
 }
 
 #[cfg(test)]

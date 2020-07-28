@@ -172,8 +172,7 @@ fn check_auth_response(response: &mut LocalResponse) {
     );
     assert_eq!(
         LAST_NAME,
-        user.get("lastName")
-            .expect("must have a 'lastName' field")
+        user.get("lastName").expect("must have a 'lastName' field")
     );
     assert!(user.get("token").is_some());
 }

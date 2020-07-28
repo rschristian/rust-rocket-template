@@ -5,8 +5,8 @@
 use once_cell::sync::OnceCell;
 use rocket::http::{ContentType, Header, Status};
 use rocket::local::{Client, LocalResponse};
-use serde_json::Value;
 use rust_rocket_template;
+use serde_json::Value;
 
 pub const FIRST_NAME: &'static str = "smoke";
 pub const LAST_NAME: &'static str = "test";

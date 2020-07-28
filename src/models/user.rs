@@ -45,7 +45,7 @@ impl User {
             email: self.email.clone(),
             exp: exp.timestamp(),
         }
-            .token(secret);
+        .token(secret);
 
         UserAuth {
             email: &self.email,
