@@ -13,16 +13,17 @@ These instructions will get you a copy of the project up and running on your loc
 ```
 Rust nightly
 Cargo
-Docker - optional
-Diesel-cli - necessary only if Docker is not used
+Docker/Compose - optional
+Diesel-cli and PostgreSQL - necessary only if Docker is not used
+PostgreSQL-libs (libpq-dev, postgresql-libs, etc. Provided by your distribution)
 ```
 
 ### Running
 
-To aid in the process of starting the server, I have provided a Docker Compose file for the database, and created a container for the CLI tool used to manage migrations. From the project root, run:
+To aid in the process of starting the server, I have provided a Docker-Compose file for the database and created a container for the CLI tool used to manage migrations. From the project root, run:
 
 ```
-docker-compose up --build -d
+docker-compose up -d
 ```
 
 This will start the Postgres DB in the background. To populate the database, run:
@@ -31,15 +32,21 @@ This will start the Postgres DB in the background. To populate the database, run
 docker run --rm \
     -v "$PWD:/volume" \
     -w /volume \
-    --network="rust-rocket-template_default" \
+    --network="$(basename $PWD)_default" \
     -it ryanchristian4427/diesel-cli migration run
 ```
 
-The network you use depends on the parent directory, so if the docker compose is indeed within 'rust-rocket-template', the command above will work just fine. Change it if you change the directory name.
+The Docker image built for diesel-cli will run "Diesel" without any arguments, making the container act like a normal CLI. However, that very large command is necessary upon every use. I therefore recommend creating an alias in a `.bashrc` or `.zshrc` so the tool can be just called with "diesel-cli [command]".
 
-The Docker image built for diesel-cli will run "Diesel" without any arguments, making the container act like a normal CLI. However, that very large command is necessary upon every use. I therefore recommend creating an alias "docker ... /diesel-cli" to "diesel-cli" in a .bashrc or .zshrc, so the tool can be just called with "diesel-cli [command]".
+```
+alias diesel-cli='docker run --rm \
+    -v "$PWD:/volume" \
+    -w /volume \
+    --network="$(basename $PWD)_default" \
+    -it ryanchristian4427/diesel-cli';
+```
 
-If you'd like to avoid Docker, a local Postgres database is necessary. Make sure to edit the [.env](.env) file to match your connection URL. You will also need to install the diesel-cli, and run it with:
+If you'd like to avoid Docker, a local Postgres database is necessary. Make sure to edit the [.env](.env) file to match your connection URL. You will also need to install the diesel-cli and run it with:
 
 ```
 diesel migration run
@@ -83,9 +90,9 @@ cargo clippy
 
 ## Built With
 
-* [Rocket](https://github.com/glium/glium) - A simple, fast, and type-safe web framework for Rust
-* [Diesel](https://github.com/tomaka/glium_text) - A safe, extensible ORM and query builder for Rust
-* [PostgreSQL](https://github.com/rustgd/cgmath) - The world's most advanced open source relational database
+* [Rocket](https://rocket.rs) - A simple, fast, and type-safe web framework for Rust
+* [Diesel](http://diesel.rs) - A safe, extensible ORM and query builder for Rust
+* [PostgreSQL](https://www.postgresql.org/) - The world's most advanced open source relational database
 
 ## Authors
 
