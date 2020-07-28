@@ -23,8 +23,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo
 
-      - name: Start DB
+      - name: Start Database
         run: docker-compose up -d
+      - name: Run Diesel Migrations
+        run: docker run --rm \
+            -v "$PWD:/volume" \
+            -w /volume \
+            --network="$(basename $PWD)_default" \
+            -it ryanchristian4427/diesel-cli migration run
 
       - name: Run cargo check --release
         uses: actions-rs/cargo@v1
